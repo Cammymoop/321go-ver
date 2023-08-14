@@ -1,0 +1,108 @@
+h1. *321GO* Versioning (or simply 321GO) Specification Version -2
+
+_Author: Charlie Burnham, August 2023_
+
+p. *321GO* versioning is a simple, fun versioning scheme for software that never deprecates, removes, or breaks old APIs.
+
+h4. Motivation
+
+I created this specification mostly for fun. But mainly because I have a project in mind where I intend to strictly never deprecate any automatable interace and wanted to strongly state that it that was the fact. I had considered a subset of SemVer that simply doesn't allow incrementing the major version but I decided something flashier was more what I was looking for, using *321GO* Versionsing is meant to serve as a noticable commitment to not leaving any integration or workflow behind.
+
+p. See *Semantic Versioning 2* for a description of what a version is and why you might use it. In *321GO* versioning "software" means anything that specifies some form of public interface that is intended to be usable in an automatic fasion, which for this point on will be called it's API. The first point from *SemVer 2.0.0* spec also applies to *321GO* versioning, to quote:
+
+bq. "Software using Semantic Versioning MUST declare a public API. This API could be declared in the code itself or exist strictly in documentation. However it is done, it SHOULD be precise and comprehensive."
+
+p. Note that because of [*321GO*]'s loose definition of software, "the code itself" and "documentation" should also be interpreted as whatever the equivalent of that might be for any given software.
+
+Version numbering starts at -3.
+* Version -3 has no semantic subversions or qualifiers, any version string that starts with -3 should be considered the same version.
+* The public API of Version -3 is infinitely unreliable and may in fact be non-existant.
+* Any software that uses *321GO* versioning is version -3 unless otherwise specificied.
+* If you are unable to locate the version of some instance of a software that uses *321GO* or are in a hurry, it is safe to assume that instance is version -3.
+* Version strings that start with -3 probably shouldn't have spaces in them but it shouldn't matter that much either so it's fine.
+
+h4. *EXAMPLE* @-3@
+
+Version strings are UTF-8 strings (even if they look like ASCII) that have the following form: @XY@
+
+Where @X@ is the *PREFIX* and @Y@ is the *POSTFIX*
+* The *PREFIX* is required and must be one of @-3@, @-2@, @-1@, or @GO@
+* The *POSTFIX* is not required regardless of *PREFIX*
+  
+The *POSTFIX* has no meaning if the *PREFIX* is @-3@ and can be any string, it can be safely discarded or you can use it to make one of those bracelets with letter beads on it.
+
+If the *PREFIX* is @-2@ or @-1@ then the *POSTFIX*, if it exists must be of the form: @+0.ZZZ-TAG@
+
+h4. *EXAMPLE* @-2+0.006-alpha0@
+
+Where @+0.@ is literal text, @ZZZ@ is some non-negative decimal integer, @-@ is literal text and @TAG@ is a string of UTF-8 characters that does not include any whitespace or non-printable characters, and also does not include @,@ or anything that looks like it (@.@ does not look like it).
+
+@TAG@ is optional and may be omitted, if so, the preceding @-@ must also be omitted. If a version string has a @TAG@, that version is considered a pre-release or expiremental version and should not be considered stable.
+
+The number @ZZZ@ specifies the subversion of the *321GO* version, it is in decimal format and may not be larger than 999. If it is less than 3 digits it is padded to 3 digits using 0s (e.g. 12 becomes @012@)
+
+If the *PREFIX* is @GO@ then the *POSTFIX* takes the same form as if the *PREFIX* was @-2@ or @-1@, but with the exception that the first literal text portion must be @.@ instead of @+0.@
+
+h4. *EXAMPLE* @GO.609@
+
+When considering the ordering of versions (and anything else that actually makes sense) "version" refers to any version except -3, all versions that are not -3 are later than version -3.
+
+A version that has no *POSTFIX* is equivalent to that version with the *POSTFIX* of @+0.000@ or @.000@ if that version is @GO@ (@GO.000@).
+
+To determine the relative ordering of any two versions first compare the version without the *POSTFIX*. If one version is of greater numerical value then it is the later version, if one version is @GO@ and the other isn't, then it is the later version.
+
+If that isn't sufficient you should then compare the subversion, which is specified by the @ZZZ@ portion of the *POSTFIX*, or is 0. If one version's subversion is of greater numerical value then it is the later version.
+
+If that isn't sufficient you should then compare the presence or absence of a @TAG@, if one version lacks a @TAG@ and the other does not then the version that lacks the @TAG@ is the later version. If both versions have tags then the later version is not specified here, you should probably just string sort them and consider them ordered anyway though. If both versions lack a @TAG@ then what do you want from me?
+
+When a new, non-tagged version is released, if the *PREFIX* is unchanged then the subversion should be incremented by 1 for the new release form the last subversion, avoid skipping numbers if possible, and especially avoid releasing out of order. For tagged releases, the next valid subversion for a non-tagged release should be used.
+
+h3. Forever?
+
+Nothing lasts forever my friend. That said, the intention of using 321GO versioning for a piece of software is to indicate to anyone who wishes to make use of it that it has *no deadline*. This is not the same as promising you will continue to support it forever, it is neither against the specification nor against the spirit of *321GO* if you were to stop updating the software entirely. It's the circle of life and all that.
+
+I would venture to say it's against the spirit of *321GO* to continue release what amounts to the same software under a different versioning scheme while not supporting older APIs, but that's fairly obvious anyway.
+
+In regards to releasing things under a new versioning scheme though, it is not at all against the spirit of 321GO to make a fresh start under a new versioning scheme, as long as the old API versions continue to be supported in some manner, such as continuing to provide sercurity patches and builds for new OSs of the original project, or handing off control and support to an active community as a continued community edition.
+
+I guess another reason to start again is if you use up all 999 of your GO versions, If someone ever manages to do that I believe I'll owe them a trophy or something. In that case of course you have the opportunity to choose a new name and make a new @GO.000@ version, any APIs still included in that version will essentially be inherited into the new project as a continuation of the previous one.
+
+h3. When do things break?
+
+In general software that uses *321GO* versioning does not make breaking changes to it's public API However, there are several things to keep in mind.
+*321GO* Specifies these exceptions to not breaking the public API:
+* Version -3 is infinitely unreliable, nothing really applies to version -3.
+* Version -2 and it's subversions are in early development and may make breaking changes to the API because that API is only considered "public" in the sense that it may be publicly available as a preview.
+* Version -1 and it's subversions may make breaking changes to it's public API if it is really necessary, sometimes it can't be avoided and better now than after a stable release is out but a version number of -1 does signify intent to continue working with this version of the API indefinitely. Version -1 and it's subversions should not be considered stable.
+* API changes made in tagged versions (any version with a @TAG@) are not considered to be part of the public API, they may no longer work in later versions and may even break previous API functionality, though the latter is discouraged.
+* Being able to continue using an older API is contingent on specifying the correct version of API you wish to use, *321GO* versioned software may require an API version to be specified to work at all, or to work with anything other than the latest API version, API versioning schemes are not specified here but you're welcome to use your *321GO* version as an API version as well, or to separately version your API using *321GO* versioning conventions, but I would recommend using simple integers if the API version doesn't follow the software version, to avoid potential confusion between software and API versions. Lastly and very notably:
+* In addition, a *321GO* versioned software is not required to be able to simultaneously allow API connections of different versions as a single running instance. If a *321GO* versioned software is intended to accept API connections from more than 1 source at a time it must have some way of handling this situation, but a single instance of a software running on a local computer need not be able to operate API connections of differing versions simultaneously. Though it should try to accomodate as wide a range of concurrent connections as reasonably possible.
+
+h4. The Power of Tagged Versions
+
+As specified, tagged versions are not restricted from breaking API or having API changes they introduce being broken. The primary intentionfor this is to allow for testing versions to be made and modified before an API change is finalized in a non-tagged version. This need not happen in the intervening space between two adjacent non-tagged releases, as long as the feature is not available on any non-tagged releases that happen while it is under development, removing an accidentally enabled expirimental API feature is not an API breakage but a bug fix.
+
+Tagged releases may be used for a variety of other purposes as well, this is an intended feature of [*321GO*]. For example if you wish to provide an extra feature that may or not be able to be supported in the future you may want to build a tagged release alongside your normal release and recommomend it to anyone who wishes to use that feature, there only needs to be a clear distinction between the normal API and what amounts to an official extension or pre-stable API, that being features you make available in a tagged version only.
+
+h4. These cases are not covered but things like this must also be kept in mind:
+
+* I'm not your dad probably, and technically you can introduce breaking changes whenever you want and still claim to use *321GO* versioning. There is no *321GO* versioning certification, and no *321GO* police.
+* A *321GO* versioned software may choose or be forced to stop providing certain functionality because of external circumstances, or because continuing to provide that functionality would in some way be a liability or dangerous in some way. *321GO* does not specify this as an allowance this is just a judgement call that whoever runs development for that software must make. As a *321GO* versioned software, the attempt should be made to cease this functionality without breaking the public API, perhaps an equivalent functionality is available by some other method that is free of the instigating issues, this is not always feasable or even possible though.
+* Although the API of any @GO@ version, and to a lesser extent any @-1@ version, will continue to work with newer versions indefinitely, you cannot neccessarily expect that old API features that are no longer in use by newer API versions to still be as useful in combination with features that only exist in those newer versions. The interoperability of two different API versions in the same software is encouraged and should be seen as the norm but is not guarunteed. This can lead to counter-intuitive situations where things are effectively broken but not because of any API breakage. For example, if something like a social media site were to introduce a new format for all it's user posted content when releasing a new API version, and didn't bother updating the code behind some of the older API versions to be able to create and read this new format, then if anyone attemted to use those old API versions they might only be able to see a handful of new posts from other users of the old APIs and the rest of the content would be innaccessable. This is antithetical to *321GO* Versioning and this kind of situation should be avoided if at all possible, however this is not explicitly prohibited by *321GO* as it is arguably not a breakage of the old API at all.
+  
+h3. One final note regarding potential breakage
+
+Never removing, deprecating, or breaking old APIs is a daunting task that in my experience is not even considered possible by most people. *321GO* is a result of my intention to make this a real thing. I may joke here and there but *321GO* is a serious standard, and as something that exists in the real world it has to comply with cold hard reality sometimes.
+
+I've only just wrote up this specification but so far this mainly amounts to the last point in the section about exceptions for breaking public API. While there's no particular reason you couldn't create software that is able to seamlessly switch to using any and every version of it's public API every time it gets a request that uses that API version there's at least a couple problems with this idea.
+
+* Old API versions will (typically) not be able to access features created after they were designed, sometimes adding new features means that a new API version must be adopted by anyone wishing to use it. This means there is always potential for multiple users, or the same user wishing to use multiple API versions to not be able to interact with this otherwise shared contextual data.
+* Typically, software evolves in a gradual manner, building up many new features, fixing or rewriting old code to fit in. Often dealing with that old code is an exercise in frustration as, in order to keep it functioning in the same way with regards to its inputs and outputs it has to behave in a completely different way from the newer parts of the code that the developer is much more comfortable with and understands well. The years of fixes, migrations, and improvements have probably also taken their toll on that old code making it very unweildy and hard to modify without breaking it. At this point the natural, (and correct in my opinion) thing to do is to deprecate the old mess, and try to replace it with something that isn't the bane of your existance. Sometimes the replacement version never comes or is never able to fill the shoes of the old one but it's quite common in my experience that this form of cleaning out old growth to allow for new growth has a possitive effect on the software both for the user and especially for the developer. That is to say that, being able to prune old code from your current version is not really an optional feature.
+
+If by using *321GO* versioning you were simply unable to do this kind of thing at all, or were able to do it but only in a messy and easily broken way, *321GO* would likely never see the light of day.
+
+I think this situation is not actually intractable though. I can see at least one way to do it and maintain your sanity. Basically you just do what people typically do when a feature they need is dropped. You keep the old version of the software and you run that. Easier said than done of course, you have to at least be able to make sure this version can still be ran into the future. And there's the possibility that it could expose some kind of security vulnerability to use it. I don't think the naive answer of "Just keep the old version and run that" is a satisfactory answer. I'm imagining for it to work properly it would be more like designing the software itself in such a way that it can be ran as a self-contained library so that certain methods can simply be called by the new version as if it was using an external dependency. It could, I think, be designed in such a way that this "archival" version only provides methods that are just pure processing and output. a wrapper in your current code would handle all the potentially dangerous stuff, and things that more often need udpates to keep functioning, networking, getting data from a filesystem, all that stuff. A lot of these things would most likely be accomplished by up to date, commonly shared code that you're already making use of, and now, perhaps just need to keep around some extra flags and modes for.
+
+It's a simplistic, optimistic plan but I do think it's possible. At least if that really is the goal from the get-go. It certainly will take a lot of extra work though, especially compared to just dropping the old versions and being done with it, but that's just the price that must be paid for no deprectations or removals.
+
+bq. Perfect software isn't real.
